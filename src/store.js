@@ -5,7 +5,7 @@ import rootReducer from './reducer';
 
 const composedEnhancer = composeWithDevTools(
   // EXAMPLE: Add whatever middleware you actually want to use here
-  applyMiddleware(print1, print2, print3)
+  // applyMiddleware(print1, print2, print3)
   // other store enhancers if any
   )
   // Pass enhancer as the second arg, since there's no preloadedState
