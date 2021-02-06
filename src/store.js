@@ -1,6 +1,6 @@
 import { applyMiddleware, createStore } from 'redux';
-import { print1, print2, print3 } from './exampleAddons/middleware';
 import { composeWithDevTools } from 'redux-devtools-extension';
+import { print1, print2, print3 } from './exampleAddons/middleware';
 import rootReducer from './reducer';
 
 const composedEnhancer = composeWithDevTools(

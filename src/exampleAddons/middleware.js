@@ -1,5 +1,3 @@
-import { getNodeText } from "@testing-library/react"
-
 export const print1 = (storeAPI) => (next) => (action) => {
   console.log('1')
   return next(action)
