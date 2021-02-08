@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 
+import { saveNewTodo } from '../todos/todosSlice'
+
 const Header = () => {
   const [text, setText] = useState('')
   const dispatch = useDispatch()
@@ -10,8 +12,10 @@ const Header = () => {
     const trimmedText = e.target.value.trim()
     // caso o usuário pressionou Enter:
     if (e.which === 13 && trimmedText) {
-      // manda um dispatch no novo todo:
-      dispatch({ type: 'todos/todoAdded', payload: trimmedText })
+      // manda um dispatch no novo todo localmente:
+      // dispatch({ type: 'todos/todoAdded', payload: trimmedText })
+      //--------- agora com REST API && "ACTION CREATOR PATTERN" ----------------
+      dispatch(saveNewTodo(trimmedText))
       // da clear no imput
       setText('')
     }

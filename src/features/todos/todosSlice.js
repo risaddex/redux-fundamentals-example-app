@@ -2,10 +2,11 @@ import { client } from "../../api/client"
 
 const initialState = []
 
-function nextTodoId(todos) {
-  const maxId = todos.reduce((maxId, todo) => Math.max(todo.id, maxId), -1)
-  return maxId + 1
-}
+// not needed anymore due to server treatment
+// function nextTodoId(todos) {
+//   const maxId = todos.reduce((maxId, todo) => Math.max(todo.id, maxId), -1)
+//   return maxId + 1
+// }
 
 export default function todosReducer(state = initialState, action) {
   switch (action.type) {
@@ -18,12 +19,12 @@ export default function todosReducer(state = initialState, action) {
     case 'todos/todoAdded': {
       // Can return just the new todos array - no extra object around it
       return [
-        ...state,
-        {
-          id: nextTodoId(state),
-          text: action.payload,
-          completed: false,
-        },
+        ...state, action.payload
+        // {
+        //   id: nextTodoId(state),
+        //   text: action.payload,
+        //   completed: false,
+        // },
       ]
     }
     case 'todos/todoToggled': {
@@ -78,4 +79,22 @@ export async function fetchTodos(dispatch, getState) {
 
   const stateAfter = getState()
   console.log('Todos before dispatch: ', stateAfter.todos.length)
+}
+
+// aqui se escreve uma função síncrona  em volta da async
+// para que ela consiga enviar o texto recebido depois do cliente adicionar um novo toDo
+// export function saveNewTodo(text) {
+//   // agora retorna a função assíncrona
+//   return async function saveNewTodoThunk(dispatch, getState) {
+//     const initialTodo = { text }
+//     const response = await client.post('/fakeApi/todos', { todo: initialTodo })
+//     dispatch({ type: 'todos/todoAdded', payload: response.todo })
+//   }
+// }
+
+// arrow function version using anonimous function :)
+export const saveNewTodo = (text) => async (dispatch, getState) => {
+    const initialTodo = { text }
+    const response = await client.post('/fakeApi/todos', { todo: initialTodo })
+    dispatch({ type: 'todos/todoAdded', payload: response.todo })
 }
