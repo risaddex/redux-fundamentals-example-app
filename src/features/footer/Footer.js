@@ -2,7 +2,7 @@ import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { availableColors, capitalize } from '../filters/colors'
 import { StatusFilters, colorFilterChanged, statusFilterChanged } from '../filters/filtersSlice'
-import { clearAllCompleted, selectTodos, todoColorSelected, toggleAllCompleted } from '../todos/todosSlice'
+import { clearAllCompleted, selectTodos, toggleAllCompleted } from '../todos/todosSlice'
 
 const RemainingTodos = ({ count }) => {
   const suffix = count === 1 ? '' : 's'
