@@ -117,9 +117,8 @@ export const selectFilteredTodos = createSelector(
     const completedStatus = status === StatusFilters.Completed  
     // retorna ambos os toDos ativos ou completados, baseado no status:
     return todos.filter(todo => {
-      const statusMatches = 
-      showAllCompletions || todo.completed === completedStatus
-      const colorMatches = colors.length === colors.includes(todo.color)
+      const statusMatches = showAllCompletions || todo.completed === completedStatus
+      const colorMatches = colors.length === 0 || colors.includes(todo.color)
       return colorMatches && statusMatches  
     })
   }

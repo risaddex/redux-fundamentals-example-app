@@ -9,7 +9,6 @@ const TodoList = () => {
   const todoIds = useSelector(selectFilteredTodoIds)
   //agora cara elemento terá um id único
   const renderedListItems = todoIds.map((todo) => {
-    console.log('todo:', todo)
     return <TodoListItem key={todo} id={todo} />
   })
 
