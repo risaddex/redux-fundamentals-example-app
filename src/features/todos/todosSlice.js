@@ -4,7 +4,10 @@ import { createSelector } from 'reselect'
 // https://redux.js.org/tutorials/fundamentals/part-7-standard-patterns#selectors-with-multiple-arguments
 import { StatusFilters } from '../filters/filtersSlice'
 
-const initialState = []
+const initialState = {
+  status: 'idle',
+  entities: []
+}
 
 // not needed anymore due to server treatment
 // function nextTodoId(todos) {
@@ -22,26 +25,32 @@ export const colorFilterChanged = (color, changeType) => (
 
 export default function todosReducer(state = initialState, action) {
   switch (action.type) {
-      // omit other reducer cases
+
     case 'todos/todosLoaded': {
-      // Replace the existing state entirely by returning the new value
-      return action.payload
+      // Agora adaptando para receber o novo formato de todo com estado de loading
+      return {
+        ...state,
+        entities: [...state.entities, action.payload]
+      }
     }
     case 'todos/todoAdded': {
       // Can return just the new todos array - no extra object around it
       return [...state, action.payload]
     }
     case 'todos/todoToggled': {
-      return state.map((todo) => {
-        if (todo.id !== action.payload) {
-          return todo
-        }
+      return {
+        ...state,
+        entities: state.entities.map((todo) => {
+          if (todo.id !== action.payload) {
+            return todo
+          }
 
-        return {
-          ...todo,
-          completed: !todo.completed,
-        }
-      })
+          return {
+            ...todo,
+            completed: !todo.completed
+          }
+        })
+      }
     }
     case 'todos/colorSelected': {
       const { color, todoId } = action.payload
@@ -78,25 +87,14 @@ export const fetchTodos = () => async dispatch => {
 
   dispatch(todosLoaded(response.todos))
 }
-// aqui se escreve uma função síncrona  em volta da async
-// para que ela consiga enviar o texto recebido depois do cliente adicionar um novo toDo
-// export function saveNewTodo(text) {
-//   // agora retorna a função assíncrona
-//   return async function saveNewTodoThunk(dispatch, getState) {
-//     const initialTodo = { text }
-//     const response = await client.post('/fakeApi/todos', { todo: initialTodo })
-//     dispatch({ type: 'todos/todoAdded', payload: response.todo })
-//   }
-// }
-
-// arrow function version using anonimous function :)
+// arrow function version using anonimous function for saveNewTodoThunk :)
 export const saveNewTodo = (text) => async (dispatch, getState) => {
     const initialTodo = { text }
     const response = await client.post('/fakeApi/todos', { todo: initialTodo })
     dispatch(todoAdded(response.todo))
 }
 
-export const selectTodos = state => state.todos
+export const selectTodos = (state) => state.todos.entities
 
 export const selectTodoById = (state, todoId) => {
   return selectTodos(state).find(todo => todo.id === todoId)
@@ -118,6 +116,7 @@ export const selectFilteredTodos = createSelector(
     // retorna ambos os toDos ativos ou completados, baseado no status:
     return todos.filter(todo => {
       const statusMatches = showAllCompletions || todo.completed === completedStatus
+      // retorna também baseado no filtro de cor
       const colorMatches = colors.length === 0 || colors.includes(todo.color)
       return colorMatches && statusMatches  
     })

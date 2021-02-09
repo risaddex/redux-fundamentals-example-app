@@ -82,7 +82,7 @@ const Footer = () => {
   const { status, colors } = useSelector(state => state.filters)
   
   const onColorChange = (color, changeType) => dispatch(colorFilterChanged(color, changeType))
-// debugger
+
   const onStatusChange = (status) =>
     dispatch({ type: 'filters/statusFilterChanged', payload: status })
   
