@@ -6,7 +6,7 @@ import { StatusFilters } from '../filters/filtersSlice'
 
 const initialState = {
   status: 'idle',
-  entities: []
+  entities: {}
 }
 
 // not needed anymore due to server treatment
@@ -16,6 +16,7 @@ const initialState = {
 // }
 export const todosLoaded = todos => ({ type: 'todos/todosLoaded', payload: todos })
 export const todoAdded = todo => ({ type: 'todos/todoAdded', payload: todo })
+export const todosLoading = todos => ({ type: 'todos/todosLoading', payload: todos })
 export const colorFilterChanged = (color, changeType) => (
     {
       type: 'filters/colorFilterChanged',
@@ -25,17 +26,26 @@ export const colorFilterChanged = (color, changeType) => (
 
 export default function todosReducer(state = initialState, action) {
   switch (action.type) {
-
+    case 'todos/todosLoading': {
+      return {
+        ...state,
+        status: 'loading'
+      }
+    }
     case 'todos/todosLoaded': {
       // Agora adaptando para receber o novo formato de todo com estado de loading
       return {
         ...state,
-        entities: [...state.entities, action.payload]
+        status: 'idle',
+        entities: action.payload
       }
     }
     case 'todos/todoAdded': {
       // Can return just the new todos array - no extra object around it
-      return [...state, action.payload]
+      return {
+        ...state,
+        entities: [...state.entities, action.payload]
+      }
     }
     case 'todos/todoToggled': {
       return {
@@ -54,27 +64,36 @@ export default function todosReducer(state = initialState, action) {
     }
     case 'todos/colorSelected': {
       const { color, todoId } = action.payload
-      return state.map((todo) => {
-        if (todo.id !== todoId) {
-          return todo
-        }
+      return {
+        ...state,
+        entities: state.entities.map((todo) => {
+          if (todo.id !== todoId) {
+            return todo
+          }
 
-        return {
-          ...todo,
-          color,
-        }
-      })
+          return {
+            ...todo,
+            color,
+          }
+        })
+      }
     }
     case 'todos/todoDeleted': {
-      return state.filter((todo) => todo.id !== action.payload)
+      return state.entities.filter((todo) => todo.id !== action.payload)
     }
     case 'todos/allCompleted': {
-      return state.map((todo) => {
-        return { ...todo, completed: true }
-      })
+      return {
+        ...state,
+        entities: state.entities.map((todo) => {
+          return { ...todo, completed: true }
+        })
+      }
     }
     case 'todos/completedCleared': {
-      return state.filter((todo) => !todo.completed)
+      return {
+        ...state,
+        entities: state.entities.filter((todo) => !todo.completed)
+      }
     }
     default:
       return state
@@ -83,8 +102,8 @@ export default function todosReducer(state = initialState, action) {
 // fetchTodosThunk function
 export const fetchTodos = () => async dispatch => {
 
+  dispatch(todosLoading())
   const response = await client.get('/fakeApi/todos')
-
   dispatch(todosLoaded(response.todos))
 }
 // arrow function version using anonimous function for saveNewTodoThunk :)
