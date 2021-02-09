@@ -1,11 +1,13 @@
-// import { print1, print2, print3 } from './exampleAddons/middleware';
-import { applyMiddleware, createStore } from 'redux';
-import thunkMiddleware from 'redux-thunk';
-import { composeWithDevTools } from 'redux-devtools-extension';
-import rootReducer from './reducer';
+import { configureStore } from '@reduxjs/toolkit';
+import filtersReducer from './features/filters/filtersSlice';
+import todosReducer from './features/todos/todosSlice';
 
-const composedEnhancer = composeWithDevTools(applyMiddleware(thunkMiddleware))
-// agora a store pode usar funções do redux-thunk
-  const store = createStore(rootReducer, composedEnhancer)
+const store = configureStore({
+  reducer: {
+    // top level state field named `todos`, handled by `todosReducer`
+    todos: todosReducer,
+    filters: filtersReducer
+  }
+})
 
   export default store
